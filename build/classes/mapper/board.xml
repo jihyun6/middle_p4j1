@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+	<select id="boardList" parameterType="boardVo" resultType="boardVo">
+		SELECT B.BOARD_NO, 
+			   B.BOARD_NAME, 
+			   B.BOARD_CONTENT, 
+			   B.BOARD_DATE, 
+			   B.BOARD_UPDATE, 
+			   B.BOARD_CLICK, 
+			   B.BOARD_STAR, 
+			   B.BOARD_WEATHER, 
+			   B.TRIAL_AREACODE, 
+			   C.CONTENTS_TYPE_ID, 
+			   B.MEM_NO, 
+			   B.CODE_NUMBER, 
+			   M.MEM_NAME, 
+			   T.CODE_NAME,
+			   B.TRAVEL_START,
+			   B.TRAVEL_END,
+			   B.CONTENT_NO,
+			   V.LOVE_NO
+		  FROM BOARD B INNER JOIN MEMBER M ON(B.MEM_NO = M.MEM_NO)
+		  			   LEFT JOIN CONTENTS_DETAIL C ON(B.CONTENT_NO = C.CONTENT_NO)
+		               INNER JOIN TYPE T ON(B.CODE_NUMBER = T.CODE_NUMBER)
+		               FULL OUTER  JOIN LOVE V ON( B.BOARD_NO= V.BOARD_NO)
+		WHERE B.BOARD_DELYN = 'N'
+		  AND B.CODE_NUMBER=${codeNumber}
+		ORDER BY B.BOARD_NO DESC
+	</select>
+	
+	<select id="boardDetail" parameterType="boardVo" resultType="boardVo">
+		SELECT B.BOARD_NO, 
+			   B.BOARD_NAME, 
+			   B.BOARD_CONTENT, 
+			   B.BOARD_DATE, 
+			   B.BOARD_UPDATE, 
+			   B.BOARD_CLICK, 
+			   B.BOARD_STAR, 
+			   B.BOARD_WEATHER, 
+			   B.TRIAL_AREACODE, 
+			   B.CONTENTS_TYPE_ID, 
+			   B.MEM_NO, 
+			   B.CODE_NUMBER, 
+			   M.MEM_NAME, 
+			   C.CONTENT_NO,
+			   C.CON_TITLE,
+			   T.CODE_NAME,
+			   B.TRAVEL_START,
+			   B.TRAVEL_END,
+			   B.BOARD_TAG
+ 		  FROM BOARD B INNER JOIN MEMBER M ON(B.MEM_NO = M.MEM_NO)
+               		   LEFT JOIN CONTENTS_DETAIL C ON(B.CONTENT_NO = C.CONTENT_NO)
+               		   INNER JOIN TYPE T ON(B.CODE_NUMBER = T.CODE_NUMBER)
+		WHERE B.BOARD_DELYN = 'N'
+ 		  AND B.BOARD_NO = ${boardNo}
+	</select>
+	
+	<update id="boardUpdate" parameterType="boardVo">
+		UPDATE BOARD
+		  SET BOARD_NO = #{boardNo}
+		  ,BOARD_NAME = #{boardName}
+		  ,BOARD_CONTENT = #{boardContent}
+		  ,BOARD_UPDATE = SYSDATE
+		  ,BOARD_STAR = #{boardStar}
+		  ,BOARD_TAG =#{boardTag}
+		  ,TRAVEL_START = #{travelStart}
+		  ,TRAVEL_END = #{travelEnd}
+		WHERE BOARD_NO = #{boardNo}
+	</update>
+	
+	<update id="boardDelete" parameterType="boardVo">
+		UPDATE board 
+	      SET BOARD_DELYN = 'Y'
+	    WHERE BOARD_NO = #{boardNo}
+	</update>
+	
+	<insert id="boardInsert" parameterType="boardVo">
+		INSERT INTO BOARD( BOARD_NO, 
+						   BOARD_NAME, 
+						   BOARD_CONTENT,
+						   BOARD_DATE,
+						   BOARD_DELYN,
+						   BOARD_TAG,
+						   BOARD_STAR,
+						   TRIAL_AREACODE,
+						   MEM_NO,
+						   CODE_NUMBER,
+						   TRAVEL_START,
+						   TRAVEL_END,
+						   CONTENT_NO)
+  		  VALUES ((SELECT NVL(MAX(BOARD_NO),0) +1 FROM BOARD), 
+  		  		   #{boardName},
+  		  		   #{boardContent}, 
+  		  		   SYSDATE, 
+  		  		   'N', 
+  		  		   #{boardTag},
+  		  		   #{boardStar},
+  		  		   #{trialAreacode},
+  		  		   #{memNo},
+  		  		   #{codeNumber},
+  		  		   #{travelStart},
+  		  		   #{travelEnd},
+  		  		   #{contentNo})
+
+	</insert>
+	
+	<select id="getBoardNo" resultType="int">
+		SELECT NVL(MAX(BOARD_NO),0)+1 FROM BOARD
+	</select>
+	<select id="planContList" resultType="PlanContVo">
+		SELECT BOARD_NO, CON_TITLE
+		FROM PLAN_CONT
+		WHERE BOARD_NO=#{boardNo}
+</select>
+</mapper>

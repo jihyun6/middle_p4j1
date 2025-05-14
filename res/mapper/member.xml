@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+	<select id="idCheck" parameterType="String" resultType="String">
+		select MEM_ID
+		from MEMBER
+		where MEM_ID = #{data}
+	</select>
+
+	<select id="nickCheck" parameterType="String"
+		resultType="String">
+		select MEM_ALIAS
+		from MEMBER
+		where MEM_ALIAS = #{data}
+	</select>
+
+	<select id="emailCheck" parameterType="String"
+		resultType="String">
+		select MEM_EMAIL
+		from MEMBER
+		where MEM_EMAIL LIKE #{data}
+	</select>
+
+	<select id="login" parameterType="MemberVo"
+		resultType="MemberVo">
+		SELECT MEM_NO, MEM_ID, MEM_NAME, MEM_AUTH
+		FROM MEMBER
+		WHERE MEM_ID = #{memId} AND MEM_PWD = #{memPwd} AND MEM_DELYN = 'N'
+	</select>
+
+
+
+
+
+	<insert id="memberJoin" parameterType="MemberVo">
+		insert into member(
+		MEM_NO
+		,MEM_ID
+		,MEM_PWD
+		,MEM_NAME
+		,MEM_ALIAS
+		,MEM_MBTI
+		,MEM_REG
+		,MEM_REG2
+		,MEM_AGE
+		,MEM_GENDER
+		,MEM_TEL
+		,MEM_EMAIL
+
+		) values (
+		(SELECT NVL(MAX(MEM_NO),0)+1 FROM member)
+		,#{memId}
+		,#{memPwd}
+		,#{memName}
+		,#{memAlias}
+		,#{memMbti}
+		,#{memReg}
+		,#{memReg2}
+		,#{memAge}
+		,#{memGender}
+		,#{memTel}
+		,#{memEmail}
+		)
+
+
+	</insert>
+
+
+<select id="memberDetail" parameterType="MemberVo" resultType="MemberVo">
+    SELECT 
+        MEM_NO, 
+        MEM_ID, 
+        MEM_NAME, 
+        MEM_ALIAS, 
+        MEM_MBTI,
+        MEM_REG,
+        MEM_REG2,
+        MEM_AGE,
+        MEM_GENDER,
+        MEM_TEL,
+        MEM_EMAIL,
+        MEM_DELYN,
+        MEM_JOIN_DATE,
+        MEM_MILEAGE,
+        MEM_AUTH,
+        MEM_PRO_URL
+    FROM 
+        MEMBER 
+    WHERE 
+        MEM_NO = #{memNo}
+</select>
+
+	<select id="memberList" parameterType="MemberVo" resultType="MemberVo">
+		SELECT 
+		    MEM_NO, 
+		    MEM_ID, 
+		    MEM_NAME, 
+		    MEM_ALIAS, 
+		    MEM_MBTI,
+		    MEM_AGE,
+		    MEM_GENDER,
+		    MEM_TEL,
+		    MEM_EMAIL
+		FROM 
+		    MEMBER
+		WHERE 
+		    MEM_DELYN = 'N'
+		ORDER BY 
+		    MEM_NO
+	</select>
+
+<!-- 동적쿼리 -->
+<select id="searchMembers" parameterType="SearchCriteriaVo" resultType="MemberVo">
+    SELECT * FROM MEMBER
+    <where>
+        <if test="searchField != null and searchText != null and searchText != ''">
+            <choose>
+            <!-- <choose> 태그: 다양한 검색 필드에 따른 조건 분기 -->
+                <when test="searchField == 'memName'">
+                    AND INSTR(UPPER(MEM_NAME), UPPER(#{searchText})) > 0
+                  <!--   INSTR(): 부분 문자열 검색 함수 ,  UPPER(): 대소문자 구분 없는 검색 -->
+                </when>
+                <when test="searchField == 'memAlias'">
+                    AND INSTR(UPPER(MEM_ALIAS), UPPER(#{searchText})) > 0
+                </when>
+                <when test="searchField == 'memMbti'">
+                    AND INSTR(UPPER(MEM_MBTI), UPPER(#{searchText})) > 0
+                </when>
+                <when test="searchField == 'memAge'">
+                    AND MEM_AGE = #{searchText}
+                </when>
+                <when test="searchField == 'memGender'">
+                    AND MEM_GENDER = #{searchText}
+                </when>
+                <when test="searchField == 'memTel'">
+                    AND INSTR(MEM_TEL, #{searchText}) > 0
+                </when>
+                <when test="searchField == 'memEmail'">
+                    AND INSTR(UPPER(MEM_EMAIL), UPPER(#{searchText})) > 0
+                </when>
+                <when test="searchField == 'memMileage'">
+                    AND MEM_MILEAGE = #{searchText}
+                </when>
+                <when test="searchField == 'memJoinDate'">
+                    AND TO_CHAR(MEM_JOIN_DATE, 'YYYY-MM-DD') LIKE '%' || #{searchText} || '%'
+                </when>
+                <when test="searchField == 'memDelyn'">
+                    AND MEM_DELYN = #{searchText}
+                </when>
+            </choose>
+        </if>
+        
+        <if test="mileageCondition != null and mileageValue != null">
+            <choose>
+                <when test="mileageCondition == 'over'">
+                    AND MEM_MILEAGE >= #{mileageValue}
+                </when>
+                <when test="mileageCondition == 'under'">
+                    AND MEM_MILEAGE <![CDATA[<=]]> #{mileageValue}
+                </when>
+                <when test="mileageCondition == 'equal'">
+                    AND MEM_MILEAGE = #{mileageValue}
+                </when>
+            </choose>
+        </if>
+        
+        <if test="joinDateFrom != null">
+            AND MEM_JOIN_DATE >= #{joinDateFrom}
+        </if>
+        
+        <if test="joinDateTo != null">
+            AND MEM_JOIN_DATE <![CDATA[<=]]> #{joinDateTo}
+        </if>
+        
+        <if test="ageGroup != null">
+            <choose>
+                <when test="ageGroup == 10">
+                    AND MEM_AGE BETWEEN 10 AND 19
+                </when>
+                <when test="ageGroup == 20">
+                    AND MEM_AGE BETWEEN 20 AND 29
+                </when>
+                <when test="ageGroup == 30">
+                    AND MEM_AGE BETWEEN 30 AND 39
+                </when>
+                <when test="ageGroup == 40">
+                    AND MEM_AGE BETWEEN 40 AND 49
+                </when>
+                <when test="ageGroup == 50">
+                    AND MEM_AGE BETWEEN 50 AND 59
+                </when>
+                <when test="ageGroup == 60">
+                    AND MEM_AGE >= 60
+                </when>
+            </choose>
+        </if>
+    </where>
+</select>
+
+	<update id="memberDelete" parameterType="memberVo">
+	    UPDATE MEMBER 
+	    SET MEM_DELYN = 'Y' 
+	    WHERE MEM_NO = #{memNo}
+	</update>
+
+</mapper>

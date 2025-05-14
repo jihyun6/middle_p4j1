@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="coupon">
+	
+	<insert id="couponInsert" parameterType="couponVo">
+		INSERT INTO COUPON(CUP_NO, CUP_NAME, CUP_DATE, CUP_DISCOUNT, MEM_NO, CUP_DELYN)
+  		  VALUES ((SELECT NVL(MAX(CUP_NO),0) +1 FROM COUPON), 
+  		  		   #{cupName},
+  		  		   SYSDATE, 
+  		  		   #{cupDiscount}, 
+  		  		   1,
+  		  		   'N')
+	</insert>
+	
+	<select id="couponList" resultType="couponVo" parameterType="couponVo">
+		SELECT CUP_NO, CUP_NAME, CUP_DATE, CUP_DISCOUNT, MEM_NO
+		  FROM COUPON
+		 WHERE CUP_DELYN='N'
+	</select>
+	
+	
+	<update id="couponUpdate" parameterType="couponVo" >
+		UPDATE COUPON
+		SET CUP_NAME = #{cupName}
+		  ,CUP_DATE = SYSDATE
+		  ,CUP_DISCOUNT = #{cupDiscount}
+		WHERE CUP_NO = #{cupNo} 
+	</update>
+	
+	<update id="couponDelete" parameterType="couponVo">
+		UPDATE COUPON 
+	    SET CUP_DELYN = 'Y'
+	    WHERE CUP_NO = #{cupNo}
+	</update>
+	
+	<select id="mypageCouponList" parameterType="int" resultType="couponVo">
+		SELECT CUP_NO,
+		 	   CUP_NAME, 
+		 	   CUP_DATE, 
+		 	   CUP_DISCOUNT, 
+		 	   MEM_NO, 
+		 	   CUP_DELYN
+		FROM COUPON
+		WHERE MEM_NO=#{memNo}
+	</select>
+	
+	
+
+</mapper>

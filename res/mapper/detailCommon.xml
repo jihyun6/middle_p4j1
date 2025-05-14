@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="detailCommon">
+	<select id="detailCommonList" resultType="hashmap">
+	  SELECT CONTENT_NO, CONTENTS_TYPE_ID
+	    FROM CONTENTS_DETAIL
+	</select>
+	
+	<insert id="detailTourismInsert" parameterType="hashmap">
+	INSERT INTO TOURISM(
+		CONTENT_NO, 
+		TOUR_ACCOMCOUNT, 
+		TOUR_EXPAGERANGE,
+		TOUR_EXPGUIDE,
+		TOUR_INFOCENTER,
+		TOUR_OPENDATE,
+		TOUR_PARKING,
+		TOUR_RESTDATE,
+		TOUR_USESEASON,
+		TOUR_USETIME)
+	VALUES(
+		#{contentid},
+		#{accomcount},
+		#{expagerange},
+		#{expguide},
+		#{infocenter},
+		#{opendate},
+		#{parking},
+		#{restdate},
+		#{useseason},
+		#{usetime})
+	</insert>
+	
+	<insert id="detailExhibitionInsert" parameterType="hashmap">
+	INSERT INTO EXHIBITION(
+		CONTENT_NO,
+		EXHIB_ACCOMCOUNT,
+		EXHIB_DISCOUNT,
+		EXHIB_INFOCENTER,
+		EXHIB_PARKING,
+		EXHIB_PARKINGFEE,
+		EXHIB_RESTDATE,
+		EXHIB_PRICE,
+		EXHIB_USETIME,
+		EXHIB_SCALE,
+		EXHIB_SPENDTIME)
+	VALUES(
+		#{contentid},
+		#{accomcountculture},
+		#{discountinfo},
+		#{infocenterculture},
+		#{parkingculture},
+		#{parkingfee},
+		#{restdateculture},
+		#{usefee},
+		#{usetimeculture},
+		#{scale},
+		#{spendtime})
+	</insert>
+	
+	<insert id="detailEventInsert" parameterType="hashmap">
+	INSERT INTO EVENT(
+		CONTENT_NO,
+		EVENT_AGELIMIT,
+		EVENT_BOOKINGPLACE,
+		EVENT_DISCOUNTINFO,
+		EVENT_ENDDATE,
+		EVENT_HOMEPAGE,
+		EVENT_PLACE,
+		EVENT_STARTDATE,
+		EVENT_GRADE,
+		EVENT_PLACEINFO,
+		EVENT_PLAYTIME,
+		EVENT_PROGRAM,
+		EVENT_SPENDTIME,
+		EVENT_PRICE)
+	VALUES(
+		#{contentid},
+		#{agelimit},
+		#{bookingplace},
+		#{discountinfofestival},
+		#{eventenddate},
+		#{eventhomepage},
+		#{eventplace},
+		#{eventstartdate},
+		#{festivalgrade},
+		#{placeinfo},
+		#{playtime},
+		#{program},
+		#{spendtimefestival},
+		#{usetimefestival})
+	</insert>
+	
+	<insert id="detailLeportsInsert" parameterType="hashmap">
+	INSERT INTO LEPORTS(
+		CONTENT_NO,
+		LEPO_ACCOMCOUNT,
+		LEPO_EXPAGERANGE,
+		LEPO_INFOCENTER,
+		LEPO_OPENPERIOD,
+		LEPO_PARKINGFEE,
+		LEPO_PARKING,
+		LEPO_RESERVATION,
+		LEPO_RESTDATE,
+		LEPO_SCALE,
+		LEPO_PRICE,
+		LEPO_USETIME)
+	VALUES(
+		#{contentid},
+		#{accomcountleports},
+		#{expagerangeleports},
+		#{infocenterleports},
+		#{openperiod},
+		#{parkingfeeleports},
+		#{parkingleports},
+		#{reservation},
+		#{restdateleports},
+		#{scaleleports},
+		#{usefeeleports},
+		#{usetimeleports})
+	</insert>
+	
+	<insert id="detailStayInsert" parameterType="hashmap">
+	INSERT INTO STAY(
+		CONTENT_NO,
+		STAY_ACCOMCOUNT,
+		STAY_CHECKINTIME,
+		STAY_CHECKOUTTIME,
+		STAY_CHKCOOKING,
+		STAY_INFOCENTER,
+		STAY_PARKING,
+		STAY_ROOMCOUNT,
+		STAY_RESERVATION,
+		STAY_ROOMTYPE,
+		STAY_SCALE)
+	VALUES(
+		#{contentid},
+		#{accomcountlodging},
+		#{checkintime},
+		#{checkouttime},
+		#{chkcooking},
+		#{infocenterlodging},
+		#{parkinglodging},
+		#{roomcount},
+		#{reservationlodging},
+		#{roomtype},
+		#{scalelodging})
+	</insert>
+	
+	<insert id="detailRestaurantInsert" parameterType="hashmap">
+	INSERT INTO RESTAURANT(
+		CONTENT_NO,
+		RES_FIRSTMENU,
+		RES_INFOCENTER,
+		RES_OPENTIME,
+		RES_PACKING,
+		RES_PARKING,
+		RES_RESERVATION,
+		RES_SCALE,
+		RES_RESTDATE,
+		RES_TREATMENU)
+	
+	VALUES(
+		#{contentid},
+		#{firstmenu},
+		#{infocenterfood},
+		#{opentimefood},
+		#{packing},
+		#{parkingfood},
+		#{reservationfood},
+		#{scalefood},
+		#{restdatefood},
+		#{treatmenu})
+	</insert>
+</mapper>

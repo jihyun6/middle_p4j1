@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+
+
+
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	
+
+	<h1>오늘의 부산 날씨</h1>
+    <input type="text" id="city" value="">
+    <button onclick="getWeather()">날씨 가져오기</button>
+    <p id=temperature></p>
+    <script type="text/javascript">
+    
+        function getWeather(){
+            let city = document.getElementById('city').value;
+            fetch('https://goweather.herokuapp.com/weather/'+city)
+            .then((response)=> response.json())
+            .then((data)=> {
+                document.getElementById('temperature').innerHTML = data['temperature'];
+            });
+        }
+        
+    </script> 
+	
+</body>
+</html>

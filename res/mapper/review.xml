@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="review">
+<select id="reviewList" parameterType="boardVo" resultType="boardVo">
+    SELECT 
+        B.BOARD_NO, B.BOARD_NAME, B.BOARD_CONTENT, M.MEM_NAME, B.BOARD_DATE, 
+        B.BOARD_UPDATE, B.BOARD_STAR, B.CONTENTS_TYPE_ID,B.CONTENT_NO
+    FROM BOARD B INNER JOIN MEMBER M ON(B.MEM_NO = M.MEM_NO)
+    WHERE B.MEM_NO = M.MEM_NO
+    AND B.BOARD_DELYN = 'N'
+    AND B.CODE_NUMBER = 3
+    
+    <if test="contentNo != null and contentNo != ''">
+        AND B.CONTENT_NO = #{contentNo}
+    </if>
+    <if test="searchWord != null and searchWord != ''">
+        <choose>
+            <when test="searchType == 'writer'">
+                AND M.MEM_NAME LIKE '%' || #{searchWord} || '%'
+            </when>
+            <when test="searchType == 'title'">
+                AND B.BOARD_NAME LIKE '%' || #{searchWord} || '%'
+            </when>
+            <when test="searchType == 'content'">
+                AND B.BOARD_CONTENT LIKE '%' || #{searchWord} || '%'
+            </when>
+        </choose>
+    </if>
+    <choose>
+        <when test="sortOrder == 'rating'">
+            ORDER BY B.BOARD_STAR DESC, B.BOARD_DATE DESC
+        </when>
+        <otherwise>
+            ORDER BY B.BOARD_DATE DESC
+        </otherwise>
+    </choose>
+</select>
+	
+<select id="reviewDetail" parameterType="boardVo" resultType="boardVo">
+    SELECT
+        B.BOARD_NO,
+        B.BOARD_NAME,
+        B.BOARD_CONTENT,
+        B.BOARD_DATE,
+        B.BOARD_DELYN,
+        B.BOARD_TAG,
+        B.BOARD_STAR,
+        M.MEM_NAME,
+        B.CONTENTS_TYPE_ID,
+        T.CODE_NUMBER,
+        B.CONTENT_NO
+    FROM BOARD B
+    JOIN MEMBER M ON B.MEM_NO = M.MEM_NO
+    JOIN TYPE T ON B.CODE_NUMBER = T.CODE_NUMBER
+    WHERE B.BOARD_DELYN = 'N' 
+    AND B.BOARD_NO = #{boardNo}
+</select>
+	
+	
+	<insert id="reviewInsert" parameterType="boardVo">
+		INSERT INTO BOARD
+			(BOARD_NO,
+			BOARD_NAME,
+			BOARD_CONTENT,
+			BOARD_DATE, BOARD_UPDATE,
+			BOARD_DELYN, 
+			BOARD_STAR,
+			MEM_NO,
+			CODE_NUMBER,
+			CONTENTS_TYPE_ID,
+			CONTENT_NO)
+  		  VALUES
+  		  	((SELECT NVL(MAX(BOARD_NO),0)+1 FROM BOARD),
+  		  	#{boardName},
+  		  	#{boardContent},
+  		  	SYSDATE, SYSDATE, 'N',
+  		  	#{boardStar},
+  		  	#{memNo},
+  		  	3,
+  		  	#{contentsTypeId},
+  		  	#{contentNo})
+	</insert>
+	
+	<update id="reviewUpdate" parameterType="boardVo">
+		UPDATE BOARD
+		  SET BOARD_NO = #{boardNo}
+		  ,BOARD_NAME = #{boardName}
+		  ,BOARD_CONTENT = #{boardContent}
+		  ,BOARD_DATE = #{boardDate}
+		  ,BOARD_STAR = #{boardStar}
+		WHERE BOARD_NO = #{boardNo}
+	</update>
+	
+	<delete id="reviewDelete" parameterType="boardVo">
+
+    UPDATE board 
+    SET BOARD_DELYN = 'Y'
+    WHERE BOARD_NO = #{boardNo}
+
+	</delete> 
+	
+</mapper>

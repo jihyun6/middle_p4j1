@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="blacklist">
+
+	<select id="blacklistList" parameterType="blacklistVo" resultType="blacklistVo">
+		SELECT
+		    B.BLACK_NO,
+		    B.MEM_NO,
+		    M.MEM_NAME,
+		    B.BLACK_REASON,
+		    B.BLACK_START_DATE,
+		    B.BLACK_END_DATE
+		FROM BLACKLIST B
+		LEFT JOIN MEMBER M ON B.MEM_NO = M.MEM_NO
+		ORDER BY B.BLACK_START_DATE DESC, B.BLACK_NO DESC
+	</select>
+
+	<select id="blacklistDetail" parameterType="blacklistVo"
+		resultType="blacklistVo">
+		SELECT
+		B.BLACK_NO,
+		B.MEM_NO,
+		M.MEM_NAME,
+		B.BLACK_REASON,
+		B.BLACK_START_DATE,
+		B.BLACK_END_DATE
+		FROM BLACKLIST B
+		LEFT JOIN MEMBER M
+		ON B.MEM_NO = M.MEM_NO
+		WHERE B.BLACK_NO = #{blackNo}
+	</select>
+
+	<insert id="blacklistInsert" parameterType="blacklistVo">
+		INSERT INTO blacklist
+		(
+		BLACK_NO, MEM_NO, BLACK_REASON, BLACK_START_DATE, BLACK_END_DATE
+		)
+		VALUES (
+		(SELECT NVL(MAX(BLACK_NO), 0) + 1 FROM blacklist),
+		#{memNo},
+		#{blackReason},
+		SYSDATE,
+		SYSDATE + 7
+		)
+	</insert>
+
+	<delete id="blacklistDelete" parameterType="blacklistVo">
+		DELETE FROM blacklist
+		WHERE black_no = #{blackNo}
+	</delete>
+
+	<update id="blacklistUpdate" parameterType="blacklistVo">
+		UPDATE blacklist
+		SET
+		MEM_NO = #{memNo},
+		BLACK_REASON = #{blackReason},
+		BLACK_START_DATE =
+		#{blackStartDate},
+		BLACK_END_DATE = #{blackEndDate}
+		WHERE BLACK_NO =
+		#{blackNo}
+	</update>
+	<select id="checkDuplicate" parameterType="int" resultType="int">
+		SELECT COUNT(*)
+		FROM blacklist
+		WHERE MEM_NO = #{memNo}
+		AND BLACK_END_DATE > SYSDATE  <!-- 현재 유효한 블랙리스트만 체크 -->
+	</select>
+</mapper>

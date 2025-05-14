@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="love">
+
+	
+	<insert id="loveUpdate"  parameterType="loveVo" >
+		 INSERT INTO LOVE(
+		             LOVE_NO,
+		             CONTENT_NO,
+		             REPLY_NO,
+		             BOARD_NO,
+		             MEM_NO) 
+		values((SELECT NVL(MAX(LOVE_NO),0)+1 FROM LOVE),
+				#{contentNo},
+				#{replyNo},
+				(NULLIF(#{boardNo},0)),
+				#{memNo}
+				)
+	</insert>
+	<select id="loveContentsCount" parameterType="loveVo" resultType="int">
+		SELECT COUNT(CONTENT_NO)
+                FROM LOVE
+                WHERE CONTENT_NO=#{contentNo}
+	</select>
+	<select id="loveBoardCount" parameterType="loveVo" resultType="int"> 
+		SELECT COUNT(BOARD_NO)
+                FROM LOVE
+                WHERE BOARD_NO=#{boardNo}
+	</select>
+	
+	<delete id="loveCancel" parameterType="loveVo">
+		DELETE FROM LOVE  
+		WHERE CONTENT_NO=#{contentNo} OR REPLY_NO=#{replyNo} OR BOARD_NO=#{boardNo} AND MEM_NO = #{memNo}
+		
+	</delete>
+	
+	<select id="lovedByMemCon" parameterType="loveVo" resultType="int">
+		SELECT COUNT (MEM_NO)
+		FROM LOVE
+		WHERE CONTENT_NO=#{contentNo} 
+		AND MEM_NO=#{memNo}
+	</select>
+	<select id="lovedByMemBoard" parameterType="loveVo" resultType="int">
+		SELECT COUNT (MEM_NO)
+		FROM LOVE
+		WHERE BOARD_NO=#{boardNo}
+		AND MEM_NO=#{memNo}
+	</select>
+	
+	
+	
+	
+</mapper>

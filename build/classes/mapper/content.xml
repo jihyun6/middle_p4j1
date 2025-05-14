@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="content">
+
+
+	<select id="contentsList" resultType="hashMap">
+		SELECT CONTENTS_TYPE_ID
+		  FROM CONTENTS_TYPE
+	</select>
+
+	<insert id="contentsInput">
+		INSERT INTO CONTENTS_DETAIL(
+			 CONTENT_NO,
+			 CON_CREATEDTIME,
+			 CON_HOMEPAGE,
+			 CON_MODIFIEDTIME,
+			 CON_TEL,
+			 CON_TITLE,
+			 CON_FIRSTIMAGE,
+			 CON_FIRSTIMAGE2,
+		 	 CON_ADDR1,
+			 CON_ADDR2,
+			 CON_ZIPCODE,
+			 CON_MAPX,
+			 CON_MAPY,
+			 CON_OVERVIEW, 
+			 TRIAL_AREACODE,
+			 CONTENTS_TYPE_ID)
+		VALUES(
+		    #{contentid},
+			#{createdtime}, 
+			#{homepage},
+			#{modifiedtime},
+			#{tel}, 
+			#{title}, 
+			#{firstimage}, 
+			#{firstimage2},
+			#{addr1}, 
+			#{addr2},
+			#{zipcode},
+			#{mapx},
+			#{mapy},
+			#{overview},
+			#{areacode},
+			#{contenttypeid}
+		)
+	</insert>
+</mapper>

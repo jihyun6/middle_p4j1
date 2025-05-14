@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="planCont">
+
+<select id="planContList" resultType="PlanContVo">
+		SELECT BOARD_NO, CON_TITLE
+		FROM PLAN_CONT
+		WHERE BOARD_NO=#{boardNo}
+</select>
+
+</mapper>

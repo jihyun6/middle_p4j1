@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="file">
+	<select id="getFileNo" resultType="int">
+		SELECT NVL(MAX(FB_NO),0) +1
+		  FROM FILE_BOARD
+	</select>
+	
+	<insert id="uploadFile" parameterType="fileVo">
+		INSERT INTO FILE_BOARD( FB_NO, 
+							    FB_ORG_NAME, 
+							    FB_SAVE_NAME, 
+							    FB_EXE, 
+							    FB_SIZE, 
+							    FB_DATE, 
+							    FB_DELYN, 
+							    FB_PATH, 
+							    BOARD_NO)
+  		  				VALUES( #{fbNo}, 
+  		  						#{fbOrgName}, 
+  		  						#{fbSaveName}, 
+  		  						#{fbExe}, 
+  		  						#{fbSize},
+  		  		  				SYSDATE, 
+  		  		  				'N',
+  		  		  				#{fbPath},
+  		  		  				(SELECT NVL(MAX(BOARD_NO),0) FROM BOARD)
+  		  		  		)
+	</insert>
+	
+	<select id="fileList" parameterType="int" resultType="fileVo">
+		SELECT *
+  		  FROM BOARD B INNER JOIN FILE_BOARD F ON(B.BOARD_NO = F.BOARD_NO)
+		WHERE B.BOARD_NO = #{boardNo}
+	</select>
+	
+	<select id="fileDetail" parameterType="int" resultType="fileVo">
+		SELECT * 
+  		  FROM FILE_BOARD
+		WHERE FB_NO = #{fbNo}
+	</select>
+</mapper>

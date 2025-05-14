@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="custormer">
+	<select id="custormerList" parameterType="custormerVo" resultType="custormerVo">
+	  SELECT CUST_NO,
+         	 CUST_TITLE,
+         	 CUST_CONTENT,
+             CUST_DATE,
+             CUST_UPDATE
+	   FROM  CUSTORMER
+             WHERE CUST_DELYN = 'N'
+ 			 ORDER BY CUST_NO DESC
+	
+	</select>
+
+	<select id="custormerDetail" parameterType="custormerVo" resultType="custormerVo">
+		SELECT CUST_NO,
+           CUST_TITLE,
+           CUST_CONTENT,
+           CUST_DATE,
+           CUST_UPDATE
+      FROM CUSTORMER
+      WHERE CUST_DELYN = 'N'
+ 		  AND CUST_NO = #{custNo}
+	
+	</select>
+	
+	<update id="custormerDelete" parameterType="CustormerVo">
+		UPDATE CUSTORMER 
+	      SET CUST_DELYN = 'Y'
+	    WHERE CUST_NO = #{custNo}
+	</update>
+	
+	
+	<update id="custormerUpdate" parameterType="custormerVo">
+		UPDATE CUSTORMER
+		   SET CUST_TITLE = #{custTitle}
+		  ,CUST_CONTENT = #{custContent}
+		WHERE CUST_NO = #{custNo}
+	
+	
+	</update>
+	
+	<insert id="custormerInsert" parameterType="custormerVo">
+		INSERT INTO CUSTORMER( CUST_NO, 
+						   CUST_TITLE, 
+						   CUST_CONTENT,
+						   CUST_DATE,
+						   MEM_NO,
+                           CUST_DELYN,
+                           CODE_NUM)
+  		  VALUES ((SELECT NVL(MAX(CUST_NO),0) +1 FROM CUSTORMER), 
+  		  		   #{custTitle},
+  		  		   #{custContent}, 
+  		  		   SYSDATE,
+                   #{memNo},
+  		  		   'N',
+                   4)
+  		  		   
+	
+	</insert>
+</mapper>

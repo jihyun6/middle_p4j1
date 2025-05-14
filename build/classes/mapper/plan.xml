@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="plan">
+
+	<select id="planList" resultType="boardVo">
+  		 SELECT BOARD_NO, BOARD_NAME, BOARD_CONTENT, MEM_NAME, BOARD_DATE, BOARD_UPDATE,
+			BOARD_WEATHER, CONTENTS_TYPE_ID,  B.MEM_NO, CODE_NUMBER,
+			TRAVEL_START, TRAVEL_END
+	        FROM BOARD B, MEMBER M 
+	        WHERE B.MEM_NO=M.MEM_NO
+	        AND B.MEM_NO=#{memNo}
+	        AND B.BOARD_DELYN='N'
+	        AND CODE_NUMBER=1
+        ORDER BY BOARD_NO DESC
+	</select>
+
+
+	<insert id="planInsert" parameterType="boardVo">
+		INSERT INTO BOARD
+		(
+		BOARD_NO, BOARD_NAME, BOARD_CONTENT, BOARD_DATE,
+		BOARD_UPDATE, BOARD_DELYN, MEM_NO, CODE_NUMBER, TRAVEL_START, TRAVEL_END, CONTENT_NO, CONTENTS_TYPE_ID
+		)
+		VALUES((SELECT NVL(MAX(BOARD_NO),0)+1 FROM BOARD), #{boardName}, #{boardContent}, SYSDATE, 
+		SYSDATE, 'N', 1, 1, #{travelStart}, #{travelEnd}, #{contentNo}, #{contentsTypeId})
+	</insert>
+
+	<select id="planView" parameterType="boardVo" resultType="boardVo"> 
+		SELECT BOARD_NO, BOARD_NAME, BOARD_CONTENT,
+		BOARD_DATE, BOARD_UPDATE, BOARD_WEATHER, MEM_NAME
+		FROM BOARD B, MEMBER M
+		WHERE B.MEM_NO=M.MEM_NO
+	</select>
+
+	<select id="contentsType" resultType="ContentsVo">
+		SELECT * FROM CONTENTS_TYPE
+	</select>
+	
+	<insert id="planUpdate">
+	INSERT INTO PLAN_CONT(PLCO_NO, BOARD_NO, CON_TITLE)
+	VALUES((SELECT NVL(MAX(PLCO_NO),0)+1 FROM PLAN_CONT),
+			#{boardNo},
+			#{conTitle},
+			)
+</insert>
+
+
+</mapper>

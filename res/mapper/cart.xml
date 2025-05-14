@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cart">
+
+<select id="cartlist" resultType="CartVo" parameterType="int">
+    SELECT 
+        C.CART_NO,
+        C.CART_HEADCOUNT,
+        C.CART_RANK,
+        C.CART_PRICE,
+        C.CONTENT_NO,
+        C.MEM_NO,
+        C.CONTENTS_TYPE_ID,
+        C.CART_DELYN,
+        D.CON_TITLE AS conTitle
+    FROM CART C 
+    LEFT JOIN CONTENTS_DETAIL D ON(C.CONTENT_NO = D.CONTENT_NO)
+    WHERE C.MEM_NO = #{memNo}
+    AND C.CART_DELYN = 'N'
+</select>
+
+<select id="cartlist1" resultType="CartVo" parameterType="String">
+	SELECT C.CART_NO,
+		   C.CART_HEADCOUNT,
+		   C.CART_RANK,
+		   C.CART_PRICE,
+		   C.CONTENT_NO,
+		   C.MEM_NO,
+		   D.CONTENT_NO
+	  FROM MEMBER M , CART C , CONTENTS_DETAIL D
+	WHERE M.MEM_ID = #{memId}
+		  AND D.CONTENT_NO = '2781914'
+		  AND C.MEM_NO = M.MEM_NO
+</select>
+
+<update id="cartDelete" parameterType="CartVo">
+		UPDATE CART 
+	      SET CART_DELYN = 'Y'
+	    WHERE CART_NO = #{cartNo}
+</update>
+
+<update id="cartDelete1" parameterType="CartVo">
+		UPDATE CART 
+	      SET CART_DELYN = 'Y'
+	    WHERE CART_NO = #{memNo}
+</update>
+
+
+<insert id="cartInsert" parameterType="CartVo">
+		INSERT INTO CART(CART_NO,
+						CART_PRICE,
+						CONTENT_NO,
+						MEM_NO,
+						CONTENTS_TYPE_ID,
+						CART_DELYN)
+				VALUES((SELECT NVL(MAX(CART_NO),0)+1 FROM CART),
+                        #{cartPrice},
+                        #{contentNo},
+                        #{memNo},
+                        #{contentsTypeId},
+                        'N')
+</insert>	
+	
+</mapper>

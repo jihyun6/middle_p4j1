@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="payment">
+
+ 
+<insert id="paymentInsert" parameterType="PaymentVo">
+    INSERT INTO payment (
+        pay_no,
+        pay_date,
+        pay_method,
+        pay_status,
+        pay_price,
+        pay_delyn,
+        mem_no,
+        content_no,
+        contents_type_id
+    ) VALUES (
+        (SELECT NVL(MAX(pay_no), 0) + 1 FROM payment),
+        SYSDATE,
+        #{payMethod},
+        #{payStatus},
+        #{payPrice},
+        'N',
+        #{memNo},
+        #{contentNo},
+        #{contentsTypeId}
+    )
+</insert>
+
+    
+	<select id="paymentDetail" parameterType="int" resultType="PaymentVo">
+	    SELECT
+	        P.*,
+	        M.MEM_NAME,
+	        C.CON_TITLE as contentTitle
+	    FROM PAYMENT P
+	    LEFT JOIN MEMBER M ON P.MEM_NO = M.MEM_NO
+	    LEFT JOIN CONTENTS_DETAIL C ON P.CONTENT_NO = C.CONTENT_NO
+	    WHERE P.PAY_NO = #{payNo}
+	    AND P.PAY_DELYN = 'N'
+	</select>
+
+   
+    <update id="paymentDelete" parameterType="int">
+        UPDATE PAYMENT
+        SET 
+            PAY_DELYN = 'Y',
+            PAY_STATUS = '결제취소'    
+        WHERE PAY_NO = #{payNo}
+    </update>
+    
+	<select id="getLatestPayment" resultType="PaymentVo">
+	    SELECT 
+	        P.*,
+	        C.CON_TITLE AS contentTitle
+	    FROM PAYMENT P
+	    LEFT JOIN CONTENTS_DETAIL C ON P.CONTENT_NO = C.CONTENT_NO
+	    WHERE P.MEM_NO = #{memNo}
+	    AND P.PAY_STATUS = '결제대기'
+	    ORDER BY P.PAY_DATE DESC
+	    FETCH FIRST 1 ROWS ONLY
+	</select>
+	
+	<select id="getPaymentList" parameterType="int" resultType="PaymentVo">
+	    SELECT 
+	        P.*,
+	        C.CON_TITLE AS contentTitle
+	    FROM PAYMENT P
+	    LEFT JOIN CONTENTS_DETAIL C ON P.CONTENT_NO = C.CONTENT_NO
+	    WHERE P.MEM_NO = #{memNo}
+	    AND P.PAY_STATUS = '결제대기'
+	    ORDER BY P.PAY_DATE DESC
+	</select>
+	
+	<update id="updatePaymentStatus" parameterType="PaymentVo">
+	    UPDATE payment 
+	    SET pay_status = '결제완료'
+	    WHERE pay_no = #{payNo}
+	</update>
+	
+
+<!-- 결제 내역 조회 -->
+	<select id="paymentList" parameterType="int" resultType="PaymentVo">
+	    SELECT DISTINCT 
+	        p.pay_no,
+	        FIRST_VALUE(cd.CON_TITLE) OVER (PARTITION BY p.pay_no ORDER BY cd.CON_TITLE) as contentTitle,
+	        COUNT(*) OVER (PARTITION BY p.pay_no) as contentCount,
+	        p.pay_date,
+	        p.pay_price,
+	        p.pay_status
+	    FROM payment p
+	    LEFT JOIN CONTENTS_DETAIL cd ON p.content_no = cd.content_no
+	    WHERE p.mem_no = #{memNo}
+	    AND p.pay_delyn = 'N'
+	    ORDER BY p.pay_date DESC
+	</select>
+
+</mapper>
